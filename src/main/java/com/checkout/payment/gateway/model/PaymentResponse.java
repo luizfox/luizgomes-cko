@@ -1,19 +1,50 @@
 package com.checkout.payment.gateway.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.io.Serializable;
+import com.checkout.payment.gateway.enums.PaymentStatus;
+import java.util.UUID;
 
-public class PostPaymentRequest implements Serializable {
-
-  @JsonProperty("card_number_last_four")
+public class PaymentResponse {
+  private UUID id;
+  private PaymentStatus status;
   private int cardNumberLastFour;
-  @JsonProperty("expiry_month")
   private int expiryMonth;
-  @JsonProperty("expiry_year")
   private int expiryYear;
   private String currency;
   private int amount;
-  private int cvv;
+  private String authorizationCode;
+  private boolean authorized;
+
+  public boolean isAuthorized() {
+    return authorized;
+  }
+
+  public void setAuthorized(boolean authorized) {
+    this.authorized = authorized;
+  }
+
+  public String getAuthorizationCode() {
+    return authorizationCode;
+  }
+
+  public void setAuthorizationCode(String authorizationCode) {
+    this.authorizationCode = authorizationCode;
+  }
+
+  public UUID getId() {
+    return id;
+  }
+
+  public void setId(UUID id) {
+    this.id = id;
+  }
+
+  public PaymentStatus getStatus() {
+    return status;
+  }
+
+  public void setStatus(PaymentStatus status) {
+    this.status = status;
+  }
 
   public int getCardNumberLastFour() {
     return cardNumberLastFour;
@@ -55,28 +86,16 @@ public class PostPaymentRequest implements Serializable {
     this.amount = amount;
   }
 
-  public int getCvv() {
-    return cvv;
-  }
-
-  public void setCvv(int cvv) {
-    this.cvv = cvv;
-  }
-
-  @JsonProperty("expiry_date")
-  public String getExpiryDate() {
-    return String.format("%d/%d", expiryMonth, expiryYear);
-  }
-
   @Override
   public String toString() {
-    return "PostPaymentRequest{" +
-        "cardNumberLastFour=" + cardNumberLastFour +
+    return "GetPaymentResponse{" +
+        "id=" + id +
+        ", status=" + status +
+        ", cardNumberLastFour=" + cardNumberLastFour +
         ", expiryMonth=" + expiryMonth +
         ", expiryYear=" + expiryYear +
         ", currency='" + currency + '\'' +
         ", amount=" + amount +
-        ", cvv=" + cvv +
         '}';
   }
 }
