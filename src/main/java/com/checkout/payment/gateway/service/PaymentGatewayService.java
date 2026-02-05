@@ -33,8 +33,11 @@ public class PaymentGatewayService {
   }
 
   public PaymentResponseDto getPaymentById(UUID id) {
-    LOG.info("Requesting access to to payment with ID {}", id);
-    PaymentResponse paymentResponse = paymentsRepository.get(id).orElseThrow(() -> new EventProcessingException("Invalid ID"));
+    LOG.info("Payment retrieval requested, paymentId={}", id);
+    PaymentResponse paymentResponse = paymentsRepository.get(id).orElseThrow(() -> {
+      LOG.warn("Payment retrieval failed, paymentId={}, reason=not_found", id);
+      return new EventProcessingException("Invalid ID");
+    });
     PaymentResponseDto responseDto = new PaymentResponseDto();
     responseDto.setId(paymentResponse.getId());
     responseDto.setAmount(paymentResponse.getAmount());
@@ -48,10 +51,10 @@ public class PaymentGatewayService {
   }
 
   public CreatePaymentResponseDto processPayment(String idempotencyKey, CreatePaymentRequest request) {
-    LOG.info("Creating payment with idempotencyID {}", idempotencyKey);
+    LOG.info("Payment processing requested, idempotencyKey={}", idempotencyKey);
     CreatePaymentResponseDto existing = idempotencyStore.get(idempotencyKey);
     if (existing != null) {
-      LOG.debug("IdempotencyID {} has been already processed", idempotencyKey);
+      LOG.info("Payment duplicate detected, idempotencyKey={}, paymentId={}", idempotencyKey, existing.getId());
       return existing;
     }
 
@@ -81,10 +84,14 @@ public class PaymentGatewayService {
 
       responseDto.setStatus(status);
       idempotencyStore.put(idempotencyKey, responseDto);
+      LOG.info("Payment processed, paymentId={}, status={}, amount={}, currency={}, cardLastFour={}, idempotencyKey={}",
+          responseDto.getId(), status, responseDto.getAmount(), responseDto.getCurrency(),
+          responseDto.getCardNumberLastFour(), idempotencyKey);
       return responseDto;
     } catch (Exception e) {
       // Step 4: Compensate — remove the PENDING payment
-      LOG.error("Bank request failed, compensating by removing payment {}", storedPaymentResponse.getId(), e);
+      LOG.error("Payment failed, paymentId={}, idempotencyKey={}, reason=bank_error",
+          storedPaymentResponse.getId(), idempotencyKey, e);
       paymentsRepository.remove(storedPaymentResponse.getId());
 
       responseDto.setStatus(PaymentStatus.DECLINED);

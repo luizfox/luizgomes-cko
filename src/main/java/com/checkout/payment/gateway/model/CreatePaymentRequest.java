@@ -92,13 +92,12 @@ public class CreatePaymentRequest implements Serializable {
 
   @Override
   public String toString() {
-    return "PostPaymentRequest{" +
-        "cardNumberLastFour='" + cardNumber + '\'' +
+    return "CreatePaymentRequest{" +
+        "cardNumberLastFour='" + (cardNumber != null && cardNumber.length() >= 4 ? cardNumber.substring(cardNumber.length() - 4) : "****") + '\'' +
         ", expiryMonth=" + expiryMonth +
         ", expiryYear=" + expiryYear +
         ", currency='" + currency + '\'' +
         ", amount=" + amount +
-        ", cvv='" + cvv + '\'' +
         '}';
   }
 }
