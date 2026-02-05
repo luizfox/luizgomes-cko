@@ -1,7 +1,7 @@
 package com.checkout.payment.gateway.exception;
 
 import com.checkout.payment.gateway.api.CreatePaymentResponseDto;
-import com.checkout.payment.gateway.enums.PaymentStatus;
+import com.checkout.payment.gateway.api.PaymentStatusDto;
 import com.checkout.payment.gateway.model.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class CommonExceptionHandler {
       MethodArgumentNotValidException ex) {
     LOG.error("Validation failed", ex);
     CreatePaymentResponseDto response = new CreatePaymentResponseDto();
-    response.setStatus(PaymentStatus.REJECTED);
+    response.setStatus(PaymentStatusDto.REJECTED);
       return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST); // double check
   }
 

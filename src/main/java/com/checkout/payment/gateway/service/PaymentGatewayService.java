@@ -82,7 +82,7 @@ public class PaymentGatewayService {
       storedPaymentResponse.setStatus(status);
       paymentsRepository.update(storedPaymentResponse);
 
-      responseDto.setStatus(status);
+      responseDto.setStatus(status == PaymentStatus.AUTHORIZED ? PaymentStatusDto.AUTHORIZED : PaymentStatusDto.DECLINED);
       idempotencyStore.put(idempotencyKey, responseDto);
       LOG.info("Payment processed, paymentId={}, status={}, amount={}, currency={}, cardLastFour={}, idempotencyKey={}",
           responseDto.getId(), status, responseDto.getAmount(), responseDto.getCurrency(),
@@ -94,7 +94,7 @@ public class PaymentGatewayService {
           storedPaymentResponse.getId(), idempotencyKey, e);
       paymentsRepository.remove(storedPaymentResponse.getId());
 
-      responseDto.setStatus(PaymentStatus.DECLINED);
+      responseDto.setStatus(PaymentStatusDto.DECLINED);
       idempotencyStore.put(idempotencyKey, responseDto);
       return responseDto;
     }
@@ -130,7 +130,6 @@ public class PaymentGatewayService {
       int lastFour) {
     CreatePaymentResponseDto response = new CreatePaymentResponseDto();
     response.setId(UUID.randomUUID());
-    response.setStatus(PaymentStatus.PENDING);
     response.setCardNumberLastFour(lastFour);
     response.setExpiryMonth(request.getExpiryMonth());
     response.setExpiryYear(request.getExpiryYear());

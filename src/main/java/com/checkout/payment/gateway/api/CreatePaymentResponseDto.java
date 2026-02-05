@@ -1,12 +1,10 @@
 package com.checkout.payment.gateway.api;
 
-import com.checkout.payment.gateway.enums.PaymentStatus;
-
 import java.util.UUID;
 
 public class CreatePaymentResponseDto {
   private UUID id;
-  private PaymentStatus status;
+  private PaymentStatusDto status;
   private int cardNumberLastFour;
   private int expiryMonth;
   private int expiryYear;
@@ -22,11 +20,11 @@ public class CreatePaymentResponseDto {
     this.id = id;
   }
 
-  public PaymentStatus getStatus() {
+  public PaymentStatusDto getStatus() {
     return status;
   }
 
-  public void setStatus(PaymentStatus status) {
+  public void setStatus(PaymentStatusDto status) {
     this.status = status;
   }
 

@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.checkout.payment.gateway.api.CreatePaymentResponseDto;
+import com.checkout.payment.gateway.api.PaymentStatusDto;
 import com.checkout.payment.gateway.client.AcquiringBankClient;
 import com.checkout.payment.gateway.enums.PaymentStatus;
 import com.checkout.payment.gateway.model.AcquiringBankResponse;
@@ -47,7 +48,7 @@ class PaymentGatewayServiceTest {
 
     CreatePaymentResponseDto response = paymentGatewayService.processPayment(java.util.UUID.randomUUID().toString(), buildRequest());
 
-    assertEquals(PaymentStatus.AUTHORIZED, response.getStatus());
+    assertEquals(PaymentStatusDto.AUTHORIZED, response.getStatus());
   }
 
   @Test
@@ -58,7 +59,7 @@ class PaymentGatewayServiceTest {
 
     CreatePaymentResponseDto response = paymentGatewayService.processPayment(java.util.UUID.randomUUID().toString(), buildRequest());
 
-    assertEquals(PaymentStatus.DECLINED, response.getStatus());
+    assertEquals(PaymentStatusDto.DECLINED, response.getStatus());
   }
 
   @Test
@@ -67,7 +68,7 @@ class PaymentGatewayServiceTest {
 
     CreatePaymentResponseDto response = paymentGatewayService.processPayment(java.util.UUID.randomUUID().toString(), buildRequest());
 
-    assertEquals(PaymentStatus.DECLINED, response.getStatus());
+    assertEquals(PaymentStatusDto.DECLINED, response.getStatus());
 
     // Payment should be saved twice: once as PENDING, once updated to DECLINED
     ArgumentCaptor<PaymentResponse> captor = ArgumentCaptor.forClass(PaymentResponse.class);
@@ -121,7 +122,7 @@ class PaymentGatewayServiceTest {
     assertEquals(PaymentStatus.AUTHORIZED, statusesAtSave.get(1));
 
     // Verify final state of the response
-    assertEquals(PaymentStatus.AUTHORIZED, response.getStatus());
+    assertEquals(PaymentStatusDto.AUTHORIZED, response.getStatus());
     assertEquals(8877, response.getCardNumberLastFour());
     assertEquals(4, response.getExpiryMonth());
     assertEquals(2027, response.getExpiryYear());
@@ -136,7 +137,7 @@ class PaymentGatewayServiceTest {
 
     CreatePaymentResponseDto response = paymentGatewayService.processPayment(java.util.UUID.randomUUID().toString(), buildRequest());
 
-    assertEquals(PaymentStatus.DECLINED, response.getStatus());
+    assertEquals(PaymentStatusDto.DECLINED, response.getStatus());
 
     // Payment was saved as PENDING
     ArgumentCaptor<PaymentResponse> captor = ArgumentCaptor.forClass(PaymentResponse.class);
