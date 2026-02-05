@@ -20,9 +20,14 @@
   merchant that would allow us to say that the payment was confirmed, even though it wasn't in real time.
   Or just wait for the merchant to retry, since the `idempotentID` would be the same.
 
+- Another attempt to prevent the problem above-mentioned: I set graceful shutdown configuration 
+ in order to prevent Spring from interrupting PaymentGatewayService.processPayment in-flight; 
+
 - Since the Spring version used here is 3.1.5, I used the Resilience4j to implement a circuit
   breaker when calling the AcquiringBank. If the version was >= 3.2, I could use Spring's RestClient and
   use its built-in feature for this.
+
+- Reducing http timeout to 5 seconds, instead of 10 for the AcquiringBankClient;
 
 - cardNumber and cvv are currently int. I've converted them to String because:
 Card numbers are 14-19 digits — overflows int (10 digits);
